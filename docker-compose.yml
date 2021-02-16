@@ -1,0 +1,70 @@
+version: "3.7"
+
+services: 
+  maria1:
+    image: mariadb:10.4
+    restart: on-failure
+    hostname: maria1
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    command: --wsrep-new-cluster
+    volumes:
+      - ./maria1:/var/lib/mysql
+      - ./config/maria1.cnf:/etc/mysql/mariadb.conf.d/maria1.cnf
+      - ./dumps:/dumps 
+    expose: 
+      - 3306
+      - 4567
+      - 4568
+      - 4444
+    networks:
+      cluster:
+        ipv4_address: 172.29.0.3
+  maria2:
+    image: mariadb:10.4
+    restart: on-failure
+    hostname: maria2
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - ./maria2:/var/lib/mysql
+      - ./config/maria2.cnf:/etc/mysql/mariadb.conf.d/maria2.cnf
+      - ./dumps:/dumps 
+    expose: 
+      - 3306
+      - 4567
+      - 4568
+      - 4444
+    links:
+      - maria1
+    networks:
+      cluster:
+        ipv4_address: 172.29.0.4
+  maria3:
+    image: mariadb:10.4
+    restart: on-failure
+    hostname: maria3
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - ./maria3:/var/lib/mysql
+      - ./config/maria3.cnf:/etc/mysql/mariadb.conf.d/maria3.cnf
+      - ./dumps:/dumps 
+    expose: 
+      - 3306
+      - 4567
+      - 4568
+      - 4444
+    links:
+      - maria1
+    networks:
+      cluster:
+        ipv4_address: 172.29.0.5
+
+networks: 
+  cluster:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.29.0.0/24
+         gateway: 172.29.0.1

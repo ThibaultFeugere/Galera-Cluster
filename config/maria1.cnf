@@ -1,0 +1,20 @@
+[mysqld]
+# Load Galera Cluster
+
+wsrep_provider = /usr/lib/galera/libgalera_smm.so
+wsrep_cluster_name='mariadb_cluster'
+
+wsrep_node_address="172.29.0.3"
+wsrep_node_name=node1
+wsrep_cluster_address="gcomm://172.29.0.3,172.29.0.4,172.29.0.5"
+
+binlog_format=ROW
+
+default_storage_engine=InnoDB
+
+innodb_autoinc_lock_mode=2
+innodb_doublewrite=1
+
+query_cache_size=0
+
+wsrep_on=ON
